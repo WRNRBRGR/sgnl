@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sylla — The AI-powered learning workspace designed to help you escape tutorial hell.">
+    <title>Sylla | Escape Tutorial Hell</title>
+    <link rel="icon" type="image/png" href="sylla_favicon_1777116031911.png">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Outfit:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+        
+        /* Navigation */
+        .landing-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 48px;
+            position: absolute;
+            top: 0;
+            width: 100%;
+            z-index: 10;
+            box-sizing: border-box;
+        }
+        
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 24px;
+            letter-spacing: -0.02em;
+        }
+        
+        .brand img {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+        }
+        
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 20px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .hero-badge {
+            background: var(--gradient-1);
+            color: var(--accent);
+            border: 1px solid rgba(196, 23, 255, 0.2);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+        
+        .hero h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(48px, 8vw, 80px);
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -0.04em;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, #ffffff 0%, #a1a1aa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            max-width: 900px;
+        }
+        
+        .hero p {
+            font-size: clamp(16px, 2vw, 20px);
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+        
+        .cta-button {
+            background: linear-gradient(135deg, var(--accent) 0%, #8a2be2 100%);
+            color: white;
+            padding: 16px 40px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(196, 23, 255, 0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(196, 23, 255, 0.5);
+            background: linear-gradient(135deg, var(--accent-hover) 0%, #9d4edd 100%);
+            color: white;
+        }
+        
+        /* Features Grid */
+        .features {
+            padding: 100px 48px;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-family: 'Outfit', sans-serif;
+            font-size: 40px;
+            margin-bottom: 60px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 32px;
+        }
+        
+        .feature-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 32px;
+            border-radius: 20px;
+            backdrop-filter: blur(20px);
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(196, 23, 255, 0.3);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        
+        .feature-icon {
+            font-size: 32px;
+            margin-bottom: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 64px;
+            height: 64px;
+            background: var(--gradient-1);
+            border-radius: 16px;
+            border: 1px solid rgba(196, 23, 255, 0.2);
+        }
+        
+        .feature-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+        
+        .feature-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        .landing-footer {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            border-top: 1px solid var(--border-color);
+            position: relative;
+            z-index: 2;
+        }
+
+        @media (max-width: 768px) {
+            .landing-nav { padding: 24px; }
+            .features { padding: 60px 24px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Premium Animated Background -->
+    <div class="bg-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="landing-nav">
+        <div class="brand">
+            <img src="sylla_favicon_1777116031911.png" alt="Sylla Logo">
+            Sylla
+        </div>
+        <a href="index.html" class="ghost-btn" style="color: var(--text-primary); border-color: var(--glass-border);">Open App</a>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-badge">AI Syllabus Architect</div>
+        <h1>Escape Tutorial Hell.</h1>
+        <p>A professional workspace to generate curricula, take markdown notes, and master new skills without the distractions of the YouTube algorithm.</p>
+        <a href="index.html" class="cta-button">Launch Workspace</a>
+    </section>
+
+    <!-- Features -->
+    <section class="features">
+        <h2 class="section-title">The framework for deep learning.</h2>
+        <div class="feature-grid">
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path></svg>
+                </div>
+                <h3 class="feature-title">AI Syllabus Architect</h3>
+                <p class="feature-desc">Describe what you want to learn. Our Gemini-powered AI builds a structured, step-by-step curriculum and finds the perfect videos instantly.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">📝</div>
+                <h3 class="feature-title">Interactive Markdown</h3>
+                <p class="feature-desc">Stop watching passively. Take rich-text notes with code blocks, headers, and lists right next to your video player. Saved locally.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🚫</div>
+                <h3 class="feature-title">Distraction-Free</h3>
+                <p class="feature-desc">No recommended videos. No toxic comment sections. Just your curriculum, a sleek Frame.io-inspired dark mode, and pure focus.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3 class="feature-title">Local-First Privacy</h3>
+                <p class="feature-desc">Your learning data never leaves your machine. Import and export your syllabuses at will. No subscriptions, no tracking.</p>
+            </div>
+
+        </div>
+    </section>
+
+    <footer class="landing-footer">
+        &copy; 2026 Sylla Learning Platform. Designed for deep work.
+    </footer>
+</body>
+</html>

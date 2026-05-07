@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sylla — A local-first learning portal to organize YouTube video curricula, track progress, and stay focused.">
+    <title>Sylla | Learning Portal</title>
+    <link rel="icon" type="image/png" href="sylla_favicon_1777116031911.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Outfit:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <div class="bg-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="brand-container">
+                    <h2 class="logo-text">Sylla</h2>
+                    <span class="subtitle">Focus & Flow</span>
+                </div>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="section-label-group">
+                    <h3>Core Views</h3>
+                </div>
+                <ul class="nav-list" id="views-list">
+                    <li class="nav-item active" id="nav-today">
+                        <div class="nav-link-content">
+                            <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                            <span>Today's Focus</span>
+                        </div>
+                    </li>
+                    <li class="nav-item" id="nav-calendar">
+                        <div class="nav-link-content">
+                            <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                            <span>Calendar</span>
+                        </div>
+                    </li>
+                    <li class="nav-item" id="nav-analytics">
+                        <div class="nav-link-content">
+                            <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+                            <span>Analytics</span>
+                        </div>
+                    </li>
+                    <li class="nav-item" id="nav-watched">
+                        <div class="nav-link-content">
+                            <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            <span>History</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-section library-section">
+                <div class="section-label-group">
+                    <h3>Content Libraries</h3>
+                </div>
+                <ul class="nav-list" id="category-list">
+                    <!-- Categories injected via JS -->
+                </ul>
+            </div>
+
+            <div id="nav-indicator" class="nav-indicator"></div>
+
+            <div class="sidebar-footer">
+                <button id="btn-ai-architect" class="ai-btn full-width" style="display: flex; align-items: center; justify-content: center;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path></svg>
+                    AI Architect
+                </button>
+                <button id="btn-add-category" class="primary-btn full-width">
+                    <span style="margin-right: 8px;">+</span> Add Library
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <button id="btn-hamburger" class="hamburger-btn" aria-label="Toggle Sidebar">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </button>
+            <header class="top-bar">
+                <div class="header-left">
+                    <h1 id="current-category-title">Select a Library</h1>
+                </div>
+                <div class="header-right">
+                    <button id="btn-settings" class="icon-btn" aria-label="Settings">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    </button>
+                </div>
+            </header>
+
+            <div id="feed-container">
+                <div id="focus-hub" class="focus-hub">
+                    <!-- Hero Card injected via JS -->
+                </div>
+                <div class="actions-section">
+                    <div class="filters-group">
+                        <input type="text" id="library-search" class="glass-input search-input" placeholder="Search videos...">
+                        <select id="sort-by" class="glass-input">
+                            <option value="default">Default Sort</option>
+                            <option value="custom">Custom (Drag & Drop)</option>
+                            <option value="length-asc">Length (Shortest First)</option>
+                            <option value="length-desc">Length (Longest First)</option>
+                            <option value="date-desc">Date (Newest First)</option>
+                            <option value="date-asc">Date (Oldest First)</option>
+                        </select>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="toggle-group-playlist"> Group by Playlist
+                        </label>
+                        <div class="view-toggles">
+                            <button id="btn-view-grid" class="icon-btn view-toggle-btn active" title="Grid View">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                            </button>
+                            <button id="btn-view-list" class="icon-btn view-toggle-btn" title="List View">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <button id="btn-add-video" class="action-btn-vibrant">Add Video</button>
+                </div>
+            
+                <div id="tag-bar" class="tag-bar"></div>
+    
+                <div id="video-grid" class="video-grid">
+                    <!-- Videos injected via JS -->
+                    <div class="empty-state">Select a library to see your syllabus.</div>
+                </div>
+            </div>
+            
+            <div id="calendar-container" class="view-container">
+                <div class="calendar-header">
+                    <button id="btn-cal-prev" class="icon-btn">&larr;</button>
+                    <h2 id="calendar-month-year" class="calendar-title">Month Year</h2>
+                    <button id="btn-cal-next" class="icon-btn">&rarr;</button>
+                </div>
+                <div class="calendar-grid" id="calendar-grid">
+                    <!-- Calendar cells injected via JS -->
+                </div>
+            </div>
+
+            <div id="analytics-container" class="view-container analytics-view">
+                <h2 class="analytics-title">Learning Analytics</h2>
+                
+                <div class="stat-cards-grid">
+                    <div class="glass-panel stat-card">
+                        <div class="stat-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.5 4 6.5 2 2 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>
+                        </div>
+                        <div id="stat-streak" class="stat-value accent">0</div>
+                        <div class="stat-label">Day Streak</div>
+                    </div>
+                    <div class="glass-panel stat-card">
+                        <div class="stat-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        </div>
+                        <div id="stat-total-time" class="stat-value">0h</div>
+                        <div class="stat-label">Total Time Studied</div>
+                    </div>
+                    <div class="glass-panel stat-card">
+                        <div class="stat-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8Z"></path><rect width="14" height="12" x="2" y="6" rx="2" ry="2"></rect></svg>
+                        </div>
+                        <div id="stat-videos-watched" class="stat-value">0</div>
+                        <div class="stat-label">Videos Completed</div>
+                    </div>
+                </div>
+
+                <div class="glass-panel balance-panel">
+                    <h3 class="balance-title">Library Balance</h3>
+                    <div id="analytics-balance" class="balance-bars">
+                        <!-- Balance bars injected via JS -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="modal-backdrop" class="modal-backdrop"></div>
+    
+    <!-- AI Architect Modal -->
+    <div id="ai-architect-modal" class="modal">
+        <div class="glass-panel">
+            <div class="modal-header">
+                <h2>✨ AI Syllabus Architect</h2>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>What do you want to learn today?</label>
+                    <textarea id="ai-prompt" class="glass-input full-width" style="height: 100px; resize: none;" placeholder="e.g., Intro to Unreal Engine 5 for Architecture, or Master character sculpting in ZBrush..."></textarea>
+                </div>
+                <div id="ai-status" style="display: none; margin-top: 16px; padding: 12px; background: var(--gradient-1); border-radius: var(--radius-md); font-size: 13px;">
+                    <span class="spinner" style="margin-right: 8px;"></span>
+                    <span id="ai-status-text">Generating curriculum...</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="ghost-btn" id="btn-close-ai">Cancel</button>
+                <button class="primary-btn" id="btn-build-syllabus" style="background: linear-gradient(135deg, #7000ff, var(--accent));">Build Library</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Category Modal -->
+    <div id="add-category-modal" class="modal glass-panel">
+        <div class="modal-header">
+            <h2>New Library</h2>
+            <button class="close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Library Name</label>
+                <input type="text" id="input-category-name" class="glass-input full-width" placeholder="e.g. Unreal Engine 5">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="ghost-btn modal-cancel">Cancel</button>
+            <button id="btn-save-category" class="primary-btn">Save Library</button>
+        </div>
+    </div>
+
+    <!-- Add Video/Playlist Modal -->
+    <div id="add-video-modal" class="modal glass-panel">
+        <div class="modal-header">
+            <h2>Add Content</h2>
+            <button class="close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>YouTube Video or Playlist URL</label>
+                <input type="url" id="input-video-url" class="glass-input full-width" placeholder="https://youtube.com/watch?v=... or &list=...">
+            </div>
+            <div class="form-group">
+                <label>Library</label>
+                <select id="input-video-category" class="glass-input full-width">
+                    <!-- Options injected via JS -->
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Tags (Optional, comma-separated)</label>
+                <input type="text" id="input-video-tags" class="glass-input full-width" placeholder="e.g. vellum, lighting, tips">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="ghost-btn modal-cancel">Cancel</button>
+            <button id="btn-save-video" class="primary-btn">
+                <span id="btn-save-video-text">Add to Syllabus</span>
+                <span id="btn-save-video-spinner" class="spinner" style="display:none;"></span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal glass-panel">
+        <div class="modal-header">
+            <h2>Settings</h2>
+            <button class="close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div style="margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--glass-border);">
+                <h3 style="font-size: 14px; margin-bottom: 16px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em;">App Preferences</h3>
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <div class="control-pill" title="Playback Speed">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        <label style="margin: 0; font-size: 11px; cursor: pointer;">SPEED</label>
+                        <select id="playback-speed" class="inline-select">
+                            <option value="1">1.0x</option>
+                            <option value="1.25">1.25x</option>
+                            <option value="1.5">1.5x</option>
+                            <option value="2">2.0x</option>
+                        </select>
+                    </div>
+                    <div class="control-pill" title="Daily Goal">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path></svg>
+                        <label style="margin: 0; font-size: 11px; cursor: pointer;">GOAL</label>
+                        <input type="number" id="daily-goal" class="inline-input" value="60">
+                        <span id="goal-progress" style="font-size: 11px; opacity: 0.7; margin-left: 4px; white-space: nowrap;">0/60m</span>
+                    </div>
+                    <button id="btn-theme-toggle" class="control-pill" aria-label="Toggle Theme" style="background: var(--card-bg);">
+                        <svg id="icon-sun" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                        <svg id="icon-moon" style="display: none;" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                        <label style="margin: 0; font-size: 11px; cursor: pointer;">THEME</label>
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 24px;">
+                <label>YouTube Data API Key</label>
+                <input type="password" id="input-api-key" class="glass-input full-width" placeholder="AIzaSy...">
+            </div>
+
+            <div class="form-group" style="margin-bottom: 24px;">
+                <label>Google AI (Gemini) API Key</label>
+                <input type="password" id="input-gemini-key" class="glass-input full-width" placeholder="Paste Gemini Key...">
+                <p class="helper-text" style="margin-top: 8px; font-size: 12px; color: var(--text-secondary);">Required for the AI Syllabus Architect. Get one at Google AI Studio.</p>
+            </div>
+
+            <div style="border-top: 1px solid var(--glass-border); padding-top: 24px; margin-bottom: 24px;">
+                <h3 style="font-size: 14px; margin-bottom: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em;">Manage Libraries</h3>
+                <div id="manage-libraries-list" style="display: flex; flex-direction: column; gap: 8px;">
+                    <!-- Libraries injected via JS -->
+                </div>
+            </div>
+
+            <div style="border-top: 1px solid var(--glass-border); padding-top: 24px;">
+                <h3 style="font-size: 14px; margin-bottom: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em;">Data Management</h3>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;">Backup your syllabus to your computer, or restore from a previous backup.</p>
+                <div style="display: flex; gap: 12px;">
+                    <button id="btn-export-data" class="ghost-btn" style="flex: 1; justify-content: center;">Export Backup</button>
+                    <button id="btn-import-data" class="ghost-btn" style="flex: 1; justify-content: center; color: var(--accent); border-color: var(--accent);">Import Backup</button>
+                    <input type="file" id="input-import-data" accept=".json" style="display: none;">
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="ghost-btn modal-cancel">Cancel</button>
+            <button id="btn-save-settings" class="primary-btn">Save Settings</button>
+        </div>
+    </div>
+
+    <!-- Assign Calendar Modal -->
+    <div id="assign-calendar-modal" class="modal glass-panel">
+        <div class="modal-header">
+            <h2 id="assign-calendar-title">Schedule for ...</h2>
+            <button class="close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p style="margin-bottom: 16px; font-size: 14px; color: var(--text-secondary);">Select the libraries you want to focus on for this day.</p>
+            <div id="assign-calendar-options" style="display: flex; flex-direction: column; gap: 12px; max-height: 200px; overflow-y: auto;">
+                <!-- checkboxes injected via js -->
+            </div>
+            
+            <div id="assign-calendar-history" style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--glass-border); display: none;">
+                <h3 style="font-size: 14px; margin-bottom: 12px;">History</h3>
+                <div id="assign-calendar-history-content" style="font-size: 13px; color: var(--text-secondary);">
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="ghost-btn modal-cancel">Cancel</button>
+            <button id="btn-save-calendar" class="primary-btn">Save Schedule</button>
+        </div>
+    </div>
+
+    <!-- Player Modal -->
+    <div id="player-modal" class="modal player-modal glass-panel">
+        <div class="modal-header">
+            <h2 id="player-title">Video Title</h2>
+            <button class="close-btn">&times;</button>
+        </div>
+        <div class="modal-body player-body">
+            <div class="player-layout">
+                <div class="player-main-content">
+                    <div class="player-video-section">
+                        <div class="aspect-ratio-wrapper">
+                            <div id="youtube-player"></div>
+                        </div>
+                    </div>
+                    <div class="player-notes-section">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                            <h3 class="section-label" style="margin: 0;">Learning Notes</h3>
+                            <div class="notes-tabs">
+                                <button id="btn-notes-edit" class="tab-btn active">Edit</button>
+                                <button id="btn-notes-preview" class="tab-btn">Preview</button>
+                            </div>
+                        </div>
+                        <div class="notes-container" style="position: relative; height: 200px;">
+                            <textarea id="video-notes" class="glass-input" placeholder="Type your notes here in Markdown... They save automatically." style="width: 100%; height: 100%; resize: none; font-family: monospace; font-size: 13px; line-height: 1.6;"></textarea>
+                            <div id="video-notes-preview" class="markdown-body glass-input" style="display: none; width: 100%; height: 100%; overflow-y: auto; text-align: left;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="player-playlist-sidebar">
+                    <h3 class="section-label">Playlist Content</h3>
+                    <div id="player-playlist-items" class="sidebar-scroll"></div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer player-footer">
+            <button id="btn-mark-complete" class="primary-btn">Mark as Watched</button>
+        </div>
+    </div>
+
+    <!-- Confirm Modal -->
+    <div id="confirm-modal" class="modal glass-panel confirm-modal">
+        <div class="modal-body" style="padding: 32px; text-align: center;">
+            <div id="confirm-icon" style="font-size: 48px; margin-bottom: 16px;">❓</div>
+            <h2 id="confirm-title" style="margin-bottom: 12px;">Are you sure?</h2>
+            <p id="confirm-message" style="color: var(--text-secondary); margin-bottom: 24px;">This action cannot be undone.</p>
+            <div style="display: flex; gap: 12px; justify-content: center;">
+                <button id="btn-confirm-cancel" class="ghost-btn" style="min-width: 100px;">Cancel</button>
+                <button id="btn-confirm-proceed" class="primary-btn" style="min-width: 100px; background: #ff453a;">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script src="app.js"></script>
+</body>
+</html>
