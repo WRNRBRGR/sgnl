@@ -25,7 +25,9 @@ try {
         activeView: 'library',
         currentCalendarDate: new Date(),
         assigningDate: null,
-        isLoading: false
+        isLoading: false,
+        user: null, // Supabase User
+        isEnvLoaded: false
     };
 } catch (e) {
     console.error("Failed to load state from localStorage:", e);
@@ -138,6 +140,7 @@ const DOM = {
     btnAiArchitect: document.getElementById('btn-ai-architect'),
     btnBuildSyllabus: document.getElementById('btn-build-syllabus'),
     btnCloseAi: document.getElementById('btn-close-ai'),
+    btnLogin: document.getElementById('btn-login'),
     
     // Spoilers/Spinners
     btnSaveVideoText: document.getElementById('btn-save-video-text'),
@@ -237,23 +240,123 @@ function toggleTheme() {
 
 // Utility: Save state with debounce
 let saveTimeout = null;
-function saveState() {
-    if (saveTimeout) clearTimeout(saveTimeout);
-    saveTimeout = setTimeout(() => {
-        localStorage.setItem('cls_theme', State.theme);
-        localStorage.setItem('cls_categories', JSON.stringify(State.categories));
-        localStorage.setItem('cls_videos', JSON.stringify(State.videos));
-        localStorage.setItem('cls_calendar', JSON.stringify(State.calendar));
-        localStorage.setItem('cls_selectedCategory', State.selectedCategoryId);
-        localStorage.setItem('cls_dailyGoal', State.dailyGoal);
-        localStorage.setItem('cls_playbackSpeed', State.playbackSpeed);
-        localStorage.setItem('cls_youtubeApiKey', State.youtubeApiKey);
-        localStorage.setItem('cls_geminiApiKey', State.geminiApiKey);
-        localStorage.setItem('cls_viewMode', State.viewMode);
-        localStorage.setItem('cls_sortBy', State.sortBy);
-        localStorage.setItem('cls_groupByPlaylist', State.groupByPlaylist);
         localStorage.setItem('cls_collapsedPlaylists', JSON.stringify(State.collapsedPlaylists));
     }, 200);
+
+    // Also sync to Supabase if logged in
+    if (State.user) {
+        saveToSupabase();
+    }
+}
+
+// Supabase Syncing
+async function saveToSupabase() {
+    if (!State.user || !window.supabaseClient) return;
+    
+    const { data, error } = await window.supabaseClient
+        .from('profiles')
+        .upsert({ 
+            id: State.user.id, 
+            app_state: {
+                categories: State.categories,
+                videos: State.videos,
+                calendar: State.calendar,
+                dailyGoal: State.dailyGoal,
+                playbackSpeed: State.playbackSpeed,
+                youtubeApiKey: State.youtubeApiKey,
+                geminiApiKey: State.geminiApiKey,
+                theme: State.theme,
+                viewMode: State.viewMode,
+                sortBy: State.sortBy,
+                groupByPlaylist: State.groupByPlaylist
+            },
+            updated_at: new Date()
+        });
+
+    if (error) console.error("Supabase Save Error:", error);
+}
+
+async function loadFromSupabase() {
+    if (!State.user || !window.supabaseClient) return;
+    
+    const { data, error } = await window.supabaseClient
+        .from('profiles')
+        .select('app_state')
+        .eq('id', State.user.id)
+        .single();
+
+    if (error && error.code !== 'PGRST116') {
+        console.error("Supabase Load Error:", error);
+        return;
+    }
+
+    if (data && data.app_state) {
+        const s = data.app_state;
+        if (s.categories) State.categories = s.categories;
+        if (s.videos) State.videos = s.videos;
+        if (s.calendar) State.calendar = s.calendar;
+        if (s.dailyGoal) State.dailyGoal = s.dailyGoal;
+        if (s.playbackSpeed) State.playbackSpeed = s.playbackSpeed;
+        if (s.youtubeApiKey && !State.youtubeApiKey) State.youtubeApiKey = s.youtubeApiKey;
+        if (s.geminiApiKey && !State.geminiApiKey) State.geminiApiKey = s.geminiApiKey;
+        if (s.theme) State.theme = s.theme;
+        if (s.viewMode) State.viewMode = s.viewMode;
+        if (s.sortBy) State.sortBy = s.sortBy;
+        if (s.groupByPlaylist !== undefined) State.groupByPlaylist = s.groupByPlaylist;
+        
+        renderSidebar();
+        renderActiveView();
+    }
+}
+
+// Environment Config
+async function fetchEnvironment() {
+    try {
+        const res = await fetch('/api/get-env');
+        const config = await res.json();
+        
+        if (config.youtubeApiKey) {
+            State.youtubeApiKey = config.youtubeApiKey;
+            DOM.inputApiKey.placeholder = "Loaded from Environment";
+            DOM.inputApiKey.disabled = true;
+        }
+        if (config.geminiApiKey) {
+            State.geminiApiKey = config.geminiApiKey;
+            DOM.inputGeminiKey.placeholder = "Loaded from Environment";
+            DOM.inputGeminiKey.disabled = true;
+        }
+        
+        // Re-initialize Supabase if keys came from Env
+        if (config.supabaseUrl && config.supabaseKey && window.supabase) {
+            window.supabaseClient = window.supabase.createClient(config.supabaseUrl, config.supabaseKey);
+        }
+        
+        State.isEnvLoaded = true;
+    } catch (e) {
+        console.warn("Could not load environment variables:", e);
+    }
+}
+
+// Auth UI Logic
+async function handleLogin() {
+    const email = prompt("Enter your email:");
+    if (!email) return;
+    
+    const { error } = await window.supabaseClient.auth.signInWithOtp({
+        email,
+        options: { emailRedirectTo: window.location.origin }
+    });
+    
+    if (error) {
+        showToast("Login error: " + error.message, "error");
+    } else {
+        showToast("Check your email for the login link!", "success");
+    }
+}
+
+async function handleLogout() {
+    await window.supabaseClient.auth.signOut();
+    location.reload();
 }
 
 // UI Utilities: Toasts & Confirmations
@@ -1392,18 +1495,34 @@ function renderFocusHub() {
 function init() {
     setTheme(State.theme);
     
-    // Data Migration for Calendar (Strings to Objects)
-    let migrated = false;
-    Object.keys(State.calendar).forEach(date => {
-        State.calendar[date] = State.calendar[date].map(assign => {
-            if (typeof assign === 'string') {
-                migrated = true;
-                return { categoryId: assign, tag: null };
-            }
-            return assign;
+    // Fetch Env Variables first
+    fetchEnvironment().then(() => {
+        // Data Migration for Calendar (Strings to Objects)
+        let migrated = false;
+        Object.keys(State.calendar).forEach(date => {
+            State.calendar[date] = State.calendar[date].map(assign => {
+                if (typeof assign === 'string') {
+                    migrated = true;
+                    return { categoryId: assign, tag: null };
+                }
+                return assign;
+            });
         });
+        if (migrated) saveState();
+
+        // Handle Auth State
+        if (window.supabaseClient) {
+            window.supabaseClient.auth.onAuthStateChange((event, session) => {
+                State.user = session?.user || null;
+                if (State.user) {
+                    loadFromSupabase();
+                    if (DOM.btnLogin) DOM.btnLogin.textContent = "Sign Out";
+                } else {
+                    if (DOM.btnLogin) DOM.btnLogin.textContent = "Sync Online";
+                }
+            });
+        }
     });
-    if (migrated) saveState();
 
     // Global Listeners
     DOM.backdrop.addEventListener('click', closeAllModals);
@@ -1452,6 +1571,12 @@ function init() {
     DOM.btnAiArchitect.addEventListener('click', () => openModal(DOM.aiArchitectModal));
     DOM.btnBuildSyllabus.addEventListener('click', buildSyllabusWithAI);
     DOM.btnSaveCategory.addEventListener('click', addCategory);
+    
+    // Auth Actions
+    DOM.btnLogin.addEventListener('click', () => {
+        if (State.user) handleLogout();
+        else handleLogin();
+    });
     
     // Library Actions
     DOM.btnAddVideo.addEventListener('click', () => {
